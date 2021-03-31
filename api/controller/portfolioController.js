@@ -34,8 +34,8 @@ portfolioController.addPortfolio= async(req, res) =>{
         return item.trimLeft()
     })
     //Sisse logitud kasutaja id, mis saadakse jsonwebtokenist kätte. 
-   // const author_ID = req.user
-   const author_ID = 1;
+   const author_ID = req.user
+   //const author_ID = 1;
   
    // Piltide tekstid pannakse arraysse
    let texts =[]
@@ -52,10 +52,12 @@ portfolioController.addPortfolio= async(req, res) =>{
         const portfolio={
             title,
             text,
+ 	    priority,
             author_ID,
             active, 
             subject_ID,
-            priority
+	    style_ID:1
+           
         }
         
       const portfolio_id = await portfolioService.work(portfolio)
@@ -73,7 +75,7 @@ portfolioController.addPortfolio= async(req, res) =>{
      // Size vajab muutmist
       if(req.files.document){
         const document={     
-            file_loc_url: 'http://localhost:3000/public/uploads/files/'+req.files.document[0].filename,
+            file_loc_url: 'http://localhost:9100/API/public/files/'+req.files.document[0].filename,
             name: req.files.document[0].filename,
             type: req.files.document[0].mimetype,
             text: fileText,
@@ -82,7 +84,7 @@ portfolioController.addPortfolio= async(req, res) =>{
             size:100
             
         }
-         await portfolioService.file(document);
+        const documentQuery = await portfolioService.file(document);
         }
 
         //Piltide lisamine.
@@ -92,27 +94,27 @@ portfolioController.addPortfolio= async(req, res) =>{
         const name = uuidv4()+path.extname(req.files.files[0].path)
         //Path, kuhu Sharp uued failid loob.
         
-        const targetPortfolioThumbnail = 'C:/Users/tooma/Desktop/riiul/public/uploads/portfolioThumbnails/'
-        const targetThumbnail = 'C:/Users/tooma/Desktop/riiul/public/uploads/thumbnails/'+name
+        const targetPortfolioThumbnail = '/var/www/html/API/public/portfolioThumbnails/'
+        const targetThumbnail ='/var/www/html/API/public/thumbnails/'+name
         //1 on esilehele(200*200px) ja 1-3 on üksiku töö vaatesse(400*400px)
         //Esilehele loodav fail on alati esimene array-s 
         //Rotate võtab automaatselt EXIF andemed ja teeb ise õigeks pööramise. Ilma selleta tulevad osad pildid tagurpidi
        const thumbnailsize = sharp(req.files.files[0].path).rotate().resize( 200,200).toFile(targetThumbnail).then((data)=>{ data.size}).catch((err)=>console.log(err))
       
         const thumbnail= {
-            file_loc_url: 'http://localhost:3000/public/uploads/thumbnails/'+name,
+            file_loc_url: 'http://localhost:9100/API/public/thumbnails/'+name,
             name: name,
-            text:phototext1,
+           text:phototext1,
             type:"thumbnail",
-            portfolio_ID: portfolio_id,
+           portfolio_ID: portfolio_id,
             priority:1,
             size:100    
         }
 
-        const thumbnailQuery= await portfolioService.file(thumbnail);
+       const thumbnailQuery= await portfolioService.file(thumbnail);
         for(i=0; i<req.files.files.length; i++){
             const photos = {
-                file_loc_url: 'http://localhost:3000/public/uploads/photos/'+req.files.files[i].filename,
+                file_loc_url: 'http://localhost:9100/public/photos/'+req.files.files[i].filename,
                 name: req.files.files[i].filename,
                 text: texts[i],
                 type: req.files.files[i].mimetype,
@@ -121,11 +123,11 @@ portfolioController.addPortfolio= async(req, res) =>{
                 size:100
                 
             }
-            const photoQuery = await portfolioService.file(photos);
+          const photoQuery = await portfolioService.file(photos);
          
             portfolioThumbnailName = uuidv4()+path.extname(req.files.files[i].path)
             const portfolioThumbnail= {
-                file_loc_url: 'http://localhost:3000/public/uploads/portfolioThumbnails/'+portfolioThumbnailName,
+                file_loc_url: 'http://localhost:9100/API/public/portfolioThumbnails/'+portfolioThumbnailName,
                 name: portfolioThumbnailName,
                 text: texts[i],
                 type:"portfolioThumbnail",
@@ -133,7 +135,7 @@ portfolioController.addPortfolio= async(req, res) =>{
                 priority:0,
                 size:2
             }
-            const pThumbnailsQuery = await portfolioService.file(portfolioThumbnail, portfolio_id);
+           const pThumbnailsQuery = await portfolioService.file(portfolioThumbnail, portfolio_id);
             sharp(req.files.files[i].path).rotate().resize( 400,400).toFile(targetPortfolioThumbnail+uuidv4()+path.extname(req.files.files[i].path)).catch((err)=>console.log(err)) 
         
         }

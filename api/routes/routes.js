@@ -22,7 +22,7 @@ router.get('/api/frontpage/:id', frontpageController.readWork);
 router.get('/api/subjectpage/:id', frontpageController.subjectView);
 
 router.post('/api/login', authController.login)
-
+router.put('/api/users/:id', userController.editUser)
 //Tokeni kontroll
 router.use(LoggedIn);
 
@@ -34,7 +34,7 @@ router.post('/api/upload', portfolioController.addPortfolio)
 //Kasutajatega seotud toimingud
 router.get('/api/users', userController.read)
 router.post('/api/users', userController.addUser)
-router.put('/api/users/:id', userController.editUser)
+
 router.delete('/api/users', userController.deleteUser)
 
 

@@ -3,12 +3,12 @@ const authService = require("../service/authService");
 const authController={}
 //Kasutaja sisse logimine
 authController.login = async  (req, res) => {
-    const username = typeof(req.body.username) === 'string' && req.body.username.trim().length > 0 ? req.body.username : false;
+    const email = typeof(req.body.email) === 'string' && req.body.email.trim().length > 0 ? req.body.email : false;
     const password = typeof(req.body.password) === 'string' && req.body.password.trim().length > 2 ? req.body.password : false;
     //Kasutajanime ja parooli olemas olu kontroll
-    if(username && password){
+    if(email && password){
         //Sisse logimine, kust tagastakse jsonwebtoken
-        const token = await authService.login(username, password);
+        const token = await authService.login(email, password);
         if(token){
             res.status(200).json({
                 success: true,

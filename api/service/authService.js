@@ -1,13 +1,12 @@
-
 const hashService = require("./hashService");
 const userService = require("./userService");
 const jwt = require('jsonwebtoken');
 const config = require('../../config');
 const authService ={}
 // Sisse logimine  
-authService.login= async (username, password) =>{
+authService.login= async (email, password) =>{
     //Emaili alusel kasutaja andmete saamine
-    const user = await userService.readByEmail(username);
+    const user = await userService.readByEmail(email);
     if(user){
        //Parooli võrdlemine 
         const match = await hashService.compare(password, user.password)

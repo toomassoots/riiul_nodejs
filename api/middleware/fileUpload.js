@@ -6,9 +6,9 @@ let storage= multer.diskStorage({
     // Salvestus koht vastavalt failitüübile.
     destination:(req, file, cb)=>{
         if(file.mimetype === 'image/jpeg' || file.mimetype === 'image/jpg' || file.mimetype==='image/png'){
-        cb(null, './public/uploads/photos');
+        cb(null, './public/photos');
          }else if(file.mimetype==='application/pdf'){
-        cb(null, './public/uploads/files')
+        cb(null, './public/files')
         }else{
             cb(null, false);
             return cb(new Error("Failitüüp on vale!"));
